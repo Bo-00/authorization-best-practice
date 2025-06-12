@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户信息 - Google OAuth2 Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(45deg, #4285f4, #34a853);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .welcome {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+        }
+
+        .profile-section {
+            padding: 2rem;
+        }
+
+        .profile-avatar {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #4285f4;
+            margin-bottom: 1rem;
+        }
+
+        .user-name {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-email {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            width: 40px;
+            text-align: center;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #4285f4;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3367d6;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            background: #28a745;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        .json-data {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .json-toggle {
+            text-align: center;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="welcome">🎉 登录成功！</div>
+            <div class="subtitle">欢迎使用 Google OAuth2 演示</div>
+        </div>
+
+        <div class="profile-section">
+            <div class="profile-avatar">
+                <img src="{{.User.Picture}}" alt="用户头像" class="avatar"
+                    onerror="this.src='data:image/svg+xml,<svg xmlns=\" http://www.w3.org/2000/svg\" width=\"120\"
+                    height=\"120\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23666\" stroke-width=\"2\">
+                <path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\" />
+                <circle cx=\"12\" cy=\"7\" r=\"4\" /></svg>'">
+                <div class="user-name">{{.User.Name}}</div>
+                <div class="user-email">
+                    {{.User.Email}}
+                    {{if .User.VerifiedEmail}}
+                    <span class="verified-badge">✓ 已验证</span>
+                    {{end}}
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-icon">👤</div>
+                    <div class="info-content">
+                        <div class="info-label">完整姓名</div>
+                        <div class="info-value">{{.User.Name}}</div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">📧</div>
+                    <div class="info-content">
+                        <div class="info-label">电子邮箱</div>
+                        <div class="info-value">{{.User.Email}}</div>
+                    </div>
+                </div>
+
+                {{if .User.GivenName}}
+                <div class="info-item">
+                    <div class="info-icon">🏷️</div>
+                    <div class="info-content">
+                        <div class="info-label">名字</div>
+                        <div class="info-value">{{.User.GivenName}}</div>
+                    </div>
+                </div>
+                {{end}}
+
+                {{if .User.FamilyName}}
+                <div class="info-item">
+                    <div class="info-icon">👨‍👩‍👧‍👦</div>
+                    <div class="info-content">
+                        <div class="info-label">姓氏</div>
+                        <div class="info-value">{{.User.FamilyName}}</div>
+                    </div>
+                </div>
+                {{end}}
+
+                {{if .User.Locale}}
+                <div class="info-item">
+                    <div class="info-icon">🌍</div>
+                    <div class="info-content">
+                        <div class="info-label">地区</div>
+                        <div class="info-value">{{.User.Locale}}</div>
+                    </div>
+                </div>
+                {{end}}
+
+                <div class="info-item">
+                    <div class="info-icon">🆔</div>
+                    <div class="info-content">
+                        <div class="info-label">Google ID</div>
+                        <div class="info-value">{{.User.ID}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button onclick="fetchUserAPI()" class="btn btn-primary">
+                    📱 测试API调用
+                </button>
+                <button onclick="toggleJSON()" class="btn btn-secondary">
+                    📄 查看原始数据
+                </button>
+                <a href="/logout" class="btn btn-danger">
+                    🚪 退出登录
+                </a>
+            </div>
+
+            <div id="json-section" class="json-toggle" style="display: none;">
+                <div class="json-data">
+                    <strong>用户原始数据:</strong><br>
+                    <pre id="user-json">{{.User | printf "%+v"}}</pre>
+                </div>
+            </div>
+
+            <div id="api-result" style="display: none;">
+                <div class="json-data">
+                    <strong>API 调用结果:</strong><br>
+                    <pre id="api-json"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleJSON() {
+            const section = document.getElementById('json-section');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function fetchUserAPI() {
+            try {
+                const response = await fetch('/api/user');
+                const data = await response.json();
+
+                document.getElementById('api-json').textContent = JSON.stringify(data, null, 2);
+                document.getElementById('api-result').style.display = 'block';
+
+                if (!response.ok) {
+                    throw new Error('API 调用失败');
+                }
+            } catch (error) {
+                document.getElementById('api-json').textContent = '错误: ' + error.message;
+                document.getElementById('api-result').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>

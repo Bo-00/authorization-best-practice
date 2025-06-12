@@ -1,0 +1,33 @@
+# Google OAuth2 配置文件
+# 请在Google Cloud Console获取这些凭据
+
+google:
+  client_id: "your-google-client-id.googleusercontent.com"
+  client_secret: "your-google-client-secret"
+  redirect_url: "http://localhost:8080/auth/google/callback"
+  scopes:
+    - "https://www.googleapis.com/auth/userinfo.email"
+    - "https://www.googleapis.com/auth/userinfo.profile"
+
+server:
+  port: "8080"
+  host: "localhost"
+# 获取Google OAuth2凭据步骤:
+# 1. 访问 https://console.cloud.google.com/
+# 2. 创建新项目或选择现有项目
+# 3. 启用以下API:
+#    - Google+ API (已弃用，但仍可用于基本信息)
+#    - People API (推荐)
+# 4. 创建OAuth 2.0客户端ID:
+#    - 转到 "APIs & Services" > "Credentials"
+#    - 点击 "Create Credentials" > "OAuth client ID"
+#    - 应用程序类型: Web application
+#    - 名称: 随意填写（如：OAuth2 Demo）
+#    - 授权的重定向URI: http://localhost:8080/auth/google/callback
+# 5. 复制Client ID和Client Secret到上面的配置中
+# 6. 保存文件并重启应用
+
+# 安全提示:
+# - 生产环境请使用HTTPS
+# - 不要将此文件提交到公共代码仓库
+# - 考虑使用环境变量或密钥管理服务
